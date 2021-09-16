@@ -5,7 +5,8 @@ INC_DIR = include
 BIN_DIR = bin
 
 all: 
-	g++ $(SRC) $(INC) -o bin/chip8
+	g++ $(SRC) $(INC) -o bin/chip8 -lstdc++fs -std=c++17
+	sudo chmod +x bin/chip8
 
 clean:
 	rm -rf bin/chip8 
