@@ -1,7 +1,7 @@
 # CHIP8_emulator
 CHIP8 emulation project
 
-predji c++ base, makefile and chip8 documentation
+predji c++ base, makefile, openGL/SDL and chip8 documentation</br>
 za nes je c++ adv
 
 https://multigesture.net/wp-content/uploads/mirror/zenogais/Tutorials.htm
