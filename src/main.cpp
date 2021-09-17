@@ -1,17 +1,6 @@
-#include <iostream>
-#include <filesystem>
-#include <fstream>
-#include <string>
-#include <cstring>
-#include <bitset>
+#include "../include/main.h"
 
-#define O_HELP 		0x01<<0
-#define O_LIST 		0x01<<1
-#define O_RUN 		0x01<<2
-#define O_VERBOSE	0x01<<3
-#define O_EXISTS 	0x01<<4
-
-std::filesystem::path f;
+std::filesystem::path f;	//rom path
 //Preko maske odredjujem sta treba da uradim, dal se trazi run, help ili list
 //I prenosim informacije, dal postoji fajl
 //Za to mi je trebalo 8 bitova, pa koristim unsigned char
@@ -22,6 +11,7 @@ void execute_args(uint8_t bitmask);
 
 int help_print();
 
+void rom_inspect();
 void rom_print(std::string s);
 void rom_list();
 bool rom_check(std::string s);
@@ -34,25 +24,29 @@ int main(int argc, char **argv)
 	return 0;
 }
 
+void rom_inspect(){std::cout<<f<<" "<<std::filesystem::file_size(f)<<"B "<<std::endl;}
+
 void rom_list()
 {
 	for(auto file : std::filesystem::directory_iterator("roms/")){
 		std::string t = file.path();
 		std::string token = t.substr(t.find("/")+1, t.find(".ch8"));
-		std::cout<< token <<std::endl;
+		std::cout<<token<<"\n"; 
 	}
+	std::cout<<std::endl;
 }
 bool rom_check(std::string s){f = "roms/"+s+".ch8";	return std::filesystem::exists(f);}
 void rom_print(std::string s){std::cout<<(rom_check(f)==1?"exists :D":"doesnt exist :/")<<std::endl;}
 
 void execute_args(uint8_t bitmask)
 {
+	//Precendence of options: help - list - insp - verb - run
 	if(bitmask & O_HELP && help_print()) return;	//if print_help() => int/bool
-	//if(bitmask&O_HELP) return print_help(); 	//if print_help() => void
 	if(bitmask & O_LIST) return rom_list();		//lists rom files
-	//Precendence of options:
-	//1.Help 2.List 3.Run 4.Verbose
-	
+	if(bitmask & O_INSPECT) rom_inspect();
+	if(bitmask & O_VERBOSE) std::cout<<"Verbose set"<<std::endl;
+	if(bitmask & O_RUN) std::cout<<"Executing.."<<std::endl;
+
 	binary_print(bitmask);
 }
 
@@ -90,7 +84,18 @@ uint8_t parse_args(int argc, char** argv)
 						else if(i+1<argc && argv[i+1][0] == '-')
 							flag_mask |= O_HELP;
 						else
-							std::cout<<"That rom doesnt exist"<<std::endl;
+							std::cout<<"ROM: "<<argv[i+1]<<" doesnt exist"<<std::endl;
+						break;
+					case 'v':
+//IMPLEMENT VERBOSE OPTION
+						break;
+					case 'i':
+						if(i+1<argc && argv[i+1][0] != '-' && rom_check(argv[i+1]))
+							flag_mask |= O_INSPECT;
+						else if(i+1<argc && argv[i+1][0] == '-')
+							flag_mask |= O_HELP;
+						else
+							std::cout<<"ROM: "<<argv[i+1]<<" doesnt exist"<<std::endl;
 						break;
 					default:
 						std::cout<<"Error "<<arg[j]<<" nije opcija"<<std::endl;
@@ -107,5 +112,5 @@ uint8_t parse_args(int argc, char** argv)
 	return flag_mask;
 }
 
-int help_print(){std::cout<<"Usage: ./chip8 [OPTION]\n\t-h\t : help\n\t-l\t : list\n\t-r <FILE_NAME>\t : run file_name program"<<std::endl; return 1;}
+int help_print(){std::cout<<"Usage: ./chip8 [OPTION]\n\t-h\t : help\n\t-l\t : list\n\t-r <FILE_NAME>\t : run file_name program\n\t-i <FILE_NAME>\t : inspect file_name program\n\tALSO you are able to combine commands like: \t -ir <FILE_NAME>..."<<std::endl; return 1;}
 void binary_print(uint8_t bitmask){std::bitset<8> y(bitmask); std::cout<<y<<std::endl;}
