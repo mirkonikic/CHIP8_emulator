@@ -27,3 +27,8 @@ Options:
 ALSO you can combine options such as:
   -ri <ROM>   or   -virl <ROM>   or -lh   ...
 ```
+
+**ToDo**
+---
+- [ ] Preuredi main.h
+- [ ] Zapocni execute_args -r -> while loop gde ucita fajl, kreira chip8 objekat i zapocne izvrsavanje
