@@ -21,10 +21,31 @@ int main(int argc, char **argv)
 //RAZMISLI DAL CES OVAKO, PARSE ARGS MOZE DA VRATI BIT_FIELD NA OSNOVU KOG EXECUTE IZVRSI SVE
 //ILI PARSE_ARGS POPUNI GLOBALNU PROMENLJIVU FLAG_MASK
 	execute_args(parse_args(argc, argv));	//-h::help, -r::run, -l::list
+
+	cpu_t cpu;
+	memory_t memory;
+		
+	//povezati cpu i memoriju
+	memory.init();
+	cpu.init(&memory);
+
+	cpu.memtest(12);
+
+	//ovde je kao maticna ploca gde se sve izvrsava
+	//zovemo while loop i zovemo cpu.exexcuteLoop()
+
+	//while(!end)
+	//{
+			
+	//}
+
 	return 0;
 }
 
-void rom_inspect(){std::cout<<f<<" "<<std::filesystem::file_size(f)<<"B "<<std::endl;}
+void rom_inspect()
+{
+	std::cout<<f<<" "<<std::filesystem::file_size(f)<<"B "<<std::endl;
+}
 
 void rom_list()
 {
@@ -35,8 +56,16 @@ void rom_list()
 	}
 	std::cout<<std::endl;
 }
-bool rom_check(std::string s){f = "roms/"+s+".ch8";	return std::filesystem::exists(f);}
-void rom_print(std::string s){std::cout<<(rom_check(f)==1?"exists :D":"doesnt exist :/")<<std::endl;}
+
+bool rom_check(std::string s){f = "roms/"+s/*+".ch8"*/; return std::filesystem::exists(f);}
+
+void rom_print(std::string s)
+{
+	std::cout<<(rom_check(f)==1?"exists :D":"doesnt exist :/")<<std::endl;
+
+	//load rom rb
+	//print hexa svaku instrukciju
+}
 
 void execute_args(uint8_t bitmask)
 {
@@ -53,7 +82,7 @@ void execute_args(uint8_t bitmask)
 uint8_t parse_args(int argc, char** argv)
 {
 	if(argc < 2){help_print(); return 0;}
-	uint8_t flag_mask = 0;
+	BYTE flag_mask = 0;
 
 	for(int i = 1; i<argc; i++)
 	{
@@ -84,7 +113,7 @@ uint8_t parse_args(int argc, char** argv)
 						else if(i+1<argc && argv[i+1][0] == '-')
 							flag_mask |= O_HELP;
 						else
-							std::cout<<"ROM: "<<argv[i+1]<<" doesnt exist"<<std::endl;
+							std::cout<<"rROM: "<<argv[i+1]<<" doesnt exist"<<std::endl;
 						break;
 					case 'v':
 //IMPLEMENT VERBOSE OPTION
@@ -95,7 +124,16 @@ uint8_t parse_args(int argc, char** argv)
 						else if(i+1<argc && argv[i+1][0] == '-')
 							flag_mask |= O_HELP;
 						else
-							std::cout<<"ROM: "<<argv[i+1]<<" doesnt exist"<<std::endl;
+							std::cout<<"iROM: "<<argv[i+1]<<" doesnt exist"<<std::endl;
+						break;
+					case 'p':
+						if(i+1<argc && argv[i+1][0] != '-' && rom_check(argv[i+1]))
+                                                        flag_mask |= O_PRINT;
+                                                else if(i+1<argc && argv[i+1][0] == '-')
+                                                        flag_mask |= O_HELP;
+                                                else
+                                                        std::cout<<"iROM: "<<argv[i+1]<<" doesnt exist"<<std::endl;
+
 						break;
 					default:
 						std::cout<<"Error "<<arg[j]<<" nije opcija"<<std::endl;
