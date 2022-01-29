@@ -24,20 +24,27 @@ int main(int argc, char **argv)
 
 	cpu_t cpu;
 	memory_t memory;
+	display_t display;
 		
 	//povezati cpu i memoriju
 	memory.init();
-	cpu.init(&memory);
+	display.init();
+	cpu.init(&memory, &display);
+	//gpu.init();
+	//io.init();
 
-	cpu.memtest(12);
+	//cpu.memtest(12);
 
-	//ovde je kao maticna ploca gde se sve izvrsava
-	//zovemo while loop i zovemo cpu.exexcuteLoop()
+	memory.load(f, std::filesystem::file_size(f));
+	
+	while(!end)
+	{
+		if(cpu.execute() == 1)
+			end = true;
 
-	//while(!end)
-	//{
-			
-	//}
+		//drawgpu();
+		//readio();
+	}
 
 	return 0;
 }

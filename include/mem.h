@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <iostream>
+//#include "common.h"
 
 class memory_t
 {
@@ -14,6 +15,7 @@ class memory_t
 		uint8_t getCell(int cell);	//decimal 0 - 4096
 		void printmem(int n);
 		void printCell(int cell);
+		void load(std::string f, int n);
 		memory_t();
 };
 

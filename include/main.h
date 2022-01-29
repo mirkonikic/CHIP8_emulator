@@ -10,9 +10,11 @@
 
 //class memory_t;
 //class cpu_t;
+//class display_t;
 
 #include "mem.h"
 #include "cpu.h"
+#include "displ.h"
 
 typedef uint8_t BYTE;
 typedef uint16_t WORD;
