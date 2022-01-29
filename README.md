@@ -1,8 +1,34 @@
 # CHIP8_emulator
 CHIP8 emulation project
 
-predji c++ base, makefile, openGL/SDL and chip8 documentation</br>
-za nes je c++ adv
+**Version 1**
+---
+'no preview currently'
 
-https://multigesture.net/wp-content/uploads/mirror/zenogais/Tutorials.htm
-https://web.archive.org/web/20050414012510/www.pj64.net/emubook/
+
+
+
+
+**Usage**
+---
+
+```
+Usage: ./chip8 [OPTIONS]
+
+  Developed by Mirko Nikic -> (Github: mirkonikic)
+
+Options:
+  -h         Help and usage
+  -l         List all available roms that can be played
+  -r <ROM>   Run specified rom file and play it
+  -i <ROM>   Inspect the ROM files size and other details
+  -v         Verbose execution, where one can have insight in registers, memory and instructions in other window
+  
+ALSO you can combine options such as:
+  -ri <ROM>   or   -virl <ROM>   or -lh   ...
+```
+
+**ToDo**
+---
+- [ ] Preuredi main.h
+- [ ] Zapocni execute_args -r -> while loop gde ucita fajl, kreira chip8 objekat i zapocne izvrsavanje
