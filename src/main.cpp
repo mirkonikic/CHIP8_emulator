@@ -30,8 +30,7 @@ int main(int argc, char **argv)
 	memory.init();
 	display.init();
 	cpu.init(&memory, &display);
-	//gpu.init();
-	//io.init();
+	//keyboard.init();
 
 	//cpu.memtest(12);
 
@@ -42,7 +41,7 @@ int main(int argc, char **argv)
 		if(cpu.execute() == 1)
 			end = true;
 
-		//drawgpu();
+		//display.refresh();
 		//readio();
 	}
 

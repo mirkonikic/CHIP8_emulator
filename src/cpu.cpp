@@ -30,7 +30,9 @@ void cpu_t::init(memory_t *mem, display_t *displ)
 	//Clear memory
 	
 	//Load fontset
-	
+	for(int i = 0; i < 80; ++i)
+		memory->setCell(i, chip8_fontset[i]);
+
 	//Reset timers
 	delay_timer = 0;
 	sound_timer = 0;
@@ -60,15 +62,43 @@ int cpu_t::execute()
 					break;
  
 				default:
-					printf ("Unknown opcode [0x0000]: 0x%X\n", opcode);          
+					//printf ("Unknown opcode [0x0000]: 0x%X\n", opcode);          
+					break;
 			}
 			break;
-		case 0xA000:
-			std::cout<<"AXXX: opcode :)";
+		case 0x1000:
 			break;
-
+		case 0x2000:
+			stack[sp] = pc;
+			++sp;
+			pc = opcode & 0x0FFF;
+			break;
+		case 0x3000:
+		case 0x4000:
+		case 0x5000:
+		case 0x6000:
+		case 0x7000:
+		case 0x8000:
+		case 0x9000:
+		case 0xA000:
+			//0xANNN sets I reg to NNN
+			I = opcode & 0x0FFF;
+			pc += 2;
+			break;
+		case 0xB000:
+		case 0xC000:
+		case 0xD000:
+			//0xDXYN
+			//	Draw sprite at position X,Y
+			//	N rows width of 8 bits
+			//	Sprite is at location on which I points to
+			break;
+		case 0xE000:
+		case 0xF000:
+			//std::cout<<"FXXX";
+			break;
 		default:
-			printf ("Unknown opcode: 0x%X\n", opcode);
+			//printf ("Unknown opcode: 0x%X\n", opcode);
 			return 1;
 			break;
 	}		

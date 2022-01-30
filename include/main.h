@@ -7,6 +7,7 @@
 #include <string>
 #include <cstring>
 #include <bitset>
+#include <SDL.h>
 
 //class memory_t;
 //class cpu_t;
