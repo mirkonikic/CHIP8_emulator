@@ -8,10 +8,10 @@ void display_t::init()
 	}
 
 	//The window we'll be rendering to
-	SDL_Window* window = NULL;
+	window = NULL;
     
 	//The surface contained by the window
-	SDL_Surface* screenSurface = NULL;
+	screenSurface = NULL;
 
 	//Initialize SDL
 	if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
@@ -28,25 +28,60 @@ void display_t::init()
         }
         else
         {
+            //Get window renderer
+            renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+
             //Get window surface
-            screenSurface = SDL_GetWindowSurface( window );
+            //screenSurface = SDL_GetWindowSurface( window );
 
             //Fill the surface white
-            SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0x00, 0x00, 0x00 ) );
+            //SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0x00, 0xff, 0x00 ) );
 
             //Update the surface
-            SDL_UpdateWindowSurface( window );
+            //SDL_UpdateWindowSurface( window );
 
-            //Wait two seconds
-            SDL_Delay( 2000 );
+        }
+    }
+
+}
+
+void display_t::clear()
+{
+    printf("clearing display");
+    for(int x = 0; x<32*64; x++)
+	{
+        screen[x] = 0;
+	}
+
+    draw();
+}
+
+void display_t::draw()
+{
+    //clear out the canvas
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(renderer);
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+
+    printf("drawing on display");
+    for(int x = 0; x<32; x++)
+    {
+        if(screen[x] == 1)
+            SDL_RenderDrawPoint(renderer, x%32, x/64);
+    }
+
+    //print on window
+    SDL_RenderPresent(renderer);
+}
+
+void display_t::quit()
+{
+        //Wait two seconds
+        SDL_Delay( 2000 );
 
 	    //Destroy window
 	    SDL_DestroyWindow( window );
 
 	    //Quit SDL subsystems
-            SDL_Quit();
-
-        }
-    }
-
+        SDL_Quit();
 }

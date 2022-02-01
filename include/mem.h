@@ -16,6 +16,7 @@ class memory_t
 		void printmem(int n);
 		void printCell(int cell);
 		void load(std::string f, int n);
+		void clear(void);
 		memory_t();
 };
 

@@ -22,6 +22,14 @@ memory_t::memory_t(void)
 	}
 }
 
+void memory_t::clear(void)
+{
+	for(int i = 0; i<4096; i++)
+	{
+		RAM[i] = 0;
+	}
+}
+
 void memory_t::printmem(int n)
 {
 	for(int i = 0x200; i<(0x200+n); i++)
