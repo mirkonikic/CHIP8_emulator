@@ -47,10 +47,23 @@ void display_t::init()
 
 void display_t::clear()
 {
-    printf("clearing display");
+    printf("clearing display\n");
     for(int x = 0; x<32*64; x++)
 	{
         screen[x] = 0;
+	}
+
+    draw();
+}
+
+void display_t::test()
+{
+    printf("testing display\n");
+    for(int x = 0; x<32*64; x++)
+	{
+        screen[x] = 0;
+        if(x % 64 == 0 || x / 64 == 32)
+            screen[x] = 1;
 	}
 
     draw();
@@ -63,11 +76,13 @@ void display_t::draw()
     SDL_RenderClear(renderer);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 
-    printf("drawing on display");
-    for(int x = 0; x<32; x++)
+    printf("drawing on display\n");
+    for(int x = 0; x<32*64; x++)
     {
-        if(screen[x] == 1)
-            SDL_RenderDrawPoint(renderer, x%32, x/64);
+        if(screen[x] == 1){
+            printf("X: %d; Y: %d :) \n", x%64, x/64);
+            SDL_RenderDrawPoint(renderer, (x%64)*5, (x/64)*5);
+        }
     }
 
     //print on window

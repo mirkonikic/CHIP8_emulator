@@ -33,7 +33,10 @@ int main(int argc, char **argv)
 	//keyboard.init();
 
 	//cpu.memtest(12);
-	//display.test();
+	display.test();
+	sleep(3);
+	display.clear();
+	sleep(1);
 
 	memory.load(f, std::filesystem::file_size(f));
 
@@ -42,9 +45,13 @@ int main(int argc, char **argv)
 		if(cpu.execute() == 1)
 			end = true;
 
+		//usleep(4000);
+
 		//ako je podesen draw flag display.refresh();
-		if(false)
+		if(cpu.drawFlag == true){
 			display.draw();
+			cpu.drawFlag = false;
+		}
 
 		//readio();
 	}

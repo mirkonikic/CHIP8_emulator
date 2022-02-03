@@ -20,6 +20,7 @@ class display_t
 		void quit();
 		void draw();
 		void clear();
+		void test();
 };
 
 #endif

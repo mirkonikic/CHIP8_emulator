@@ -4,6 +4,7 @@
 #include "mem.h"
 #include "displ.h"
 #include "common.h"
+#include <unistd.h>
 
 class cpu_t
 {
@@ -18,6 +19,7 @@ class cpu_t
 		//gpu drawn by sprites, 8w 1-15h
 
 	public:
+		bool drawFlag = false;
 		void init(memory_t *mem, display_t *displ);
 		int execute();
 		void memtest(int n);
