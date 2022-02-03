@@ -3,7 +3,7 @@ CHIP8 emulation project
 
 **Version 1**
 ---
-'no preview currently'
+![img/version1.jpg](img/version1.jpg)
 
 
 
