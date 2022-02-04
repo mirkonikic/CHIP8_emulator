@@ -62,7 +62,7 @@ void display_t::test()
     for(int x = 0; x<32*64; x++)
 	{
         screen[x] = 0;
-        if(x % 64 == 0 || x / 64 == 32)
+        if(x % 2 == 0)
             screen[x] = 1;
 	}
 
@@ -81,7 +81,7 @@ void display_t::draw()
     {
         if(screen[x] == 1){
             printf("X: %d; Y: %d :) \n", x%64, x/64);
-            SDL_RenderDrawPoint(renderer, (x%64)*5, (x/64)*5);
+            SDL_RenderDrawPoint(renderer, (x%64)*10, (x/64)*10);
         }
     }
 

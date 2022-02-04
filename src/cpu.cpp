@@ -65,13 +65,17 @@ int cpu_t::execute()
 				case 0x00E0: // 0x00E0: Clears the screen        
 					// Execute opcode
 					display->clear();
+					drawFlag = true;
+					printf("0x00E0:\n\tDisplay Cleared :D");
 					break;
  
 				case 0x00EE: // 0x00EE: Returns from subroutine          
 					// Execute opcode
-					break;
+					sp--;
+                	pc = stack[sp];
+                	pc += 2;
+                	break;
 				default:
-					//calls machine code routine at address NNN
 					//printf ("Unknown opcode [0x0000]: 0x%X\n", opcode);          
 					break;
 			}
@@ -81,7 +85,7 @@ int cpu_t::execute()
 			//samo promeni pc u adresu
 			printf("0x1NNN:\n\tBpc: %.2X; ", pc);
 			pc = opcode & 0x0FFF;	//2B - pc je 2B :D
-			printf("Apc: %.2X; \n", pc);
+			printf("Apc: %.2X; %d \n", pc, pc);
 			break;		
 		case 0x2000:
 			//call subroutine at NNN
@@ -125,21 +129,79 @@ int cpu_t::execute()
 			pc += 2;
 			printf("0x7XNN:\n\top: %X; X: %X|%d; vX[]: %.2X; pc: %X\n", opcode, (opcode & 0x0F00) >> 8, (opcode & 0x0F00) >> 8, vX[(opcode & 0x0F00) >> 8], pc);
 			break;
-//zavrsi
 		case 0x8000:
 			/*
 Opcode	Type	C Pseudo	Explanation
-8XY0	Assig	Vx = Vy	Sets VX to the value of VY.
-8XY1	BitOp	Vx |= Vy	Sets VX to VX or VY. (Bitwise OR operation);
-8XY2	BitOp	Vx &= Vy	Sets VX to VX and VY. (Bitwise AND operation);
-8XY3[a]	BitOp	Vx ^= Vy	Sets VX to VX xor VY.
-8XY4	Math	Vx += Vy	Adds VY to VX. VF is set to 1 when there's a carry, and to 0 when there is not.
-8XY5	Math	Vx -= Vy	VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there is not.
-8XY6[a]	BitOp	Vx >>= 1	Stores the least significant bit of VX in VF and then shifts VX to the right by 1.[b]
-8XY7[a]	Math	Vx = Vy - Vx	Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there is not.
-8XYE[a]	BitOp	Vx <<= 1	Stores the most significant bit of VX in VF and then shifts VX to the left by 1.[b]
++ 8XY0	Assig	Vx = Vy	Sets VX to the value of VY.
++ 8XY1	BitOp	Vx |= Vy	Sets VX to VX or VY. (Bitwise OR operation);
++ 8XY2	BitOp	Vx &= Vy	Sets VX to VX and VY. (Bitwise AND operation);
++ 8XY3	BitOp	Vx ^= Vy	Sets VX to VX xor VY.
++ 8XY4	Math	Vx += Vy	Adds VY to VX. VF is set to 1 when there's a carry, and to 0 when there is not.
++ 8XY5	Math	Vx -= Vy	VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there is not.
++ 8XY6	BitOp	Vx >>= 1	Stores the least significant bit of VX in VF and then shifts VX to the right by 1.[b]
++ 8XY7	Math	Vx = Vy - Vx	Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there is not.
++ 8XYE	BitOp	Vx <<= 1	Stores the most significant bit of VX in VF and then shifts VX to the left by 1.[b]
 			*/
-			printf("0x8000 - not finished\n");
+			switch(opcode&0x000F)
+			{
+				case 0x0:
+					vX[(opcode&0x0F00)>>8] = vX[(opcode&0x00F0)>>4];
+					pc += 2;
+					printf("X: %x | %x -> Y: %X | %x \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4);
+					break;
+				case 0x1:
+					vX[(opcode&0x0F00)>>8] |= vX[(opcode&0x00F0)>>4];
+					pc += 2;
+					vX[0xF] = 0;
+					printf("X: %x | %x -> Y: %X | %x \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4);
+					break;
+				case 0x2:
+					vX[(opcode&0x0F00)>>8] &= vX[(opcode&0x00F0)>>4];
+					vX[0xF] = 0;
+					pc += 2;
+					printf("X: %x | %x -> Y: %X | %x \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4);
+					break;
+				case 0x3:
+					vX[(opcode&0x0F00)>>8] ^= vX[(opcode&0x00F0)>>4];
+					vX[0xF] = 0;
+					pc += 2;
+					printf("X: %x | %x -> Y: %X | %x \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4);
+					break;
+				case 0x4:
+					vX[(opcode&0x0F00)>>8] += vX[(opcode&0x00F0)>>4];
+					vX[0xF] = (BYTE)(vX[(opcode&0x0F00)>>8]+vX[(opcode&0x00F0)>>4])>0xFF;
+					pc += 2;
+					printf("X: %x | %x -> Y: %X | %x; carry: %d \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4, (BYTE)(vX[(opcode&0x0F00)>>8]+vX[(opcode&0x00F0)>>4])>0xFF);
+					break;
+				case 0x5:
+					vX[(opcode&0x0F00)>>8] -= vX[(opcode&0x00F0)>>4];
+					pc += 2;
+					vX[0xF] = (BYTE)!(vX[(opcode&0x0F00)>>8]<vX[(opcode&0x00F0)>>4]);
+					printf("X: %x | %x -> Y: %X | %x; carry: %d \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4, (BYTE)!(vX[(opcode&0x0F00)>>8]<vX[(opcode&0x00F0)>>4]));
+					break;
+				case 0x6:
+					vX[0xF] = vX[(opcode&0x0F00)>>8] & 0x1;
+					vX[(opcode&0x0F00)>>8] >>= 1;
+					pc += 2;
+					printf("X: %x | %x -> Y: %X | %x; vF: %d \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4, vX[0xF]);
+					break;
+				case 0x7:
+					vX[(opcode&0x0F00)>>8] = vX[(opcode&0x00F0)>>4] - vX[(opcode&0x0F00)>>8];
+					pc += 2;
+					vX[0xF] = (BYTE)!(vX[(opcode&0x0F00)>>8]>vX[(opcode&0x00F0)>>4]);
+					printf("X: %x | %x -> Y: %X | %x; carry: %d \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4, (BYTE)!(vX[(opcode&0x0F00)>>8]<vX[(opcode&0x00F0)>>4]));
+					break;
+				case 0xE:
+					vX[0xF] = vX[(opcode&0x0F00)>>8] & 0b10000000;
+					vX[(opcode&0x0F00)>>8] <<= 1;
+					pc += 2;
+					printf("X: %x | %x -> Y: %X | %x; vF: %d \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4, vX[0xF]);
+					break;
+				default:
+					printf("%X unknown opcode\n", opcode);
+					pc += 2;
+					break;
+			}
 			break;
 		case 0x9000:
 			//9XY0 -> skips next instruction if vX != vY
@@ -228,25 +290,74 @@ printf("0xDXYN - trebalo bi da je gotovo\n\t");
 			}
 			break;
 		case 0xF000:
-//zavrsi
 			//std::cout<<"FXXX";
 			/*
-FX07	Timer	Vx = get_delay()	Sets VX to the value of the delay timer.
-FX0A	KeyOp	Vx = get_key()	A key press is awaited, and then stored in VX. (Blocking Operation. All instruction halted until next key event);
-FX15	Timer	delay_timer(Vx)	Sets the delay timer to VX.
-FX18	Sound	sound_timer(Vx)	Sets the sound timer to VX.
-FX1E	MEM	I += Vx	Adds VX to I. VF is not affected.[c]
-FX29	MEM	I = sprite_addr[Vx]	Sets I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font.
-FX33	BCD	
-set_BCD(Vx)
++ FX07	Timer	Vx = get_delay()	Sets VX to the value of the delay timer.
++ FX0A	KeyOp	Vx = get_key()	A key press is awaited, and then stored in VX. (Blocking Operation. All instruction halted until next key event);
++ FX15	Timer	delay_timer(Vx)	Sets the delay timer to VX.
++ FX18	Sound	sound_timer(Vx)	Sets the sound timer to VX.
++ FX1E	MEM	I += Vx	Adds VX to I. VF is not affected.
++ FX29	MEM	I = sprite_addr[Vx]	Sets I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font.
+- FX33	BCD	set_BCD(Vx)
 *(I+0) = BCD(3);
 *(I+1) = BCD(2);
 *(I+2) = BCD(1);
 Stores the binary-coded decimal representation of VX, with the most significant of three digits at the address in I, the middle digit at I plus 1, and the least significant digit at I plus 2. (In other words, take the decimal representation of VX, place the hundreds digit in memory at location in I, the tens digit at location I+1, and the ones digit at location I+2.);
-FX55	MEM	reg_dump(Vx, &I)	Stores from V0 to VX (including VX) in memory, starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.[d]
-FX65	MEM	reg_load(Vx, &I)	Fills from V0 to VX (including VX) with values from memory, starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.[d]
+- FX55	MEM	reg_dump(Vx, &I)	Stores from V0 to VX (including VX) in memory, starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.[d]
+- FX65	MEM	reg_load(Vx, &I)	Fills from V0 to VX (including VX) with values from memory, starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.[d]
 			*/
-			printf("0xFXYY - not finished\n");
+			switch(opcode & 0x00FF)
+			{
+				case 0x07:
+					vX[(opcode & 0x0F00) >> 8] = delay_timer;
+					pc += 2;
+					printf("X: %x; d_time: %x \n", vX[(opcode & 0x0F00) >> 8], delay_timer);
+					break;
+//zavrsi
+				case 0x0A:
+					//vX[(opcode & 0x0F00) >> 8] = kbd->get_key();
+					pc += 2;
+					printf("KEY PRESS EXPECTED \n");
+					break;
+				case 0x15:
+					delay_timer = vX[(opcode & 0x0F00) >> 8];
+					pc += 2;
+					break;
+				case 0x18:
+					sound_timer = vX[(opcode & 0x0F00) >> 8];
+					pc += 2;
+					break;
+				case 0x1E:
+					I += vX[(opcode & 0x0F00) >> 8];
+					pc += 2;
+					break;
+				case 0x29:
+					I = vX[(opcode & 0x0F00) >> 8] * 0x5;
+					pc += 2;
+					break;
+				case 0x33:
+                    memory->setCell(I, vX[(opcode & 0x0F00) >> 8] / 100);
+                    memory->setCell(I+1, ((vX[(opcode & 0x0F00) >> 8] / 10) % 10));
+                    memory->setCell(I+2, ((vX[(opcode & 0x0F00) >> 8] % 100) % 10));
+                    pc += 2;
+					break;
+				case 0x55:
+					for (int i = 0; i <= ((opcode & 0x0F00) >> 8); i++)
+                    {
+                        memory->setCell(I + i, vX[i]);
+                    }
+                    I = I + ((opcode & 0x0F00) >> 8) + 1;
+                    pc += 2;
+					break;
+				case 0x66:	
+					for (int i = 0; i <= ((opcode & 0x0F00) >> 8); i++)
+                    {
+                        vX[i] = memory->getCell(I + i);
+                    }
+                    I = I + ((opcode & 0x0F00) >> 8) + 1;
+                    pc += 2;
+					break;
+			}
 			break;
 		default:
 			printf ("Unknown opcode: 0x%X\n", opcode);
@@ -254,7 +365,7 @@ FX65	MEM	reg_load(Vx, &I)	Fills from V0 to VX (including VX) with values from me
 			break;
 	}		
 
-	/*
+	
 	//update timers
 	if(delay_timer > 0)
 		--delay_timer;
@@ -265,9 +376,9 @@ FX65	MEM	reg_load(Vx, &I)	Fills from V0 to VX (including VX) with values from me
 			printf("BEEP!\n");
 		--sound_timer;
 	} 
-	*/
+	
 
-	usleep(50000);
+	usleep(100000);
 
 	return 0;	
 }
