@@ -41,7 +41,7 @@ void memory_t::printmem(int n)
 
 void memory_t::printCell(int cell)
 {
-	std::cout<<std::setw(3)<<std::setfill('0')<<cell<<". cell: "<<std::setw(3)<<std::setfill('0')<<(int)RAM[cell]<<" : ";
+	std::cout<<std::setw(3)<<std::setfill('0')<<std::hex<<cell<<std::dec<<". cell: "<<std::setw(3)<<std::setfill('0')<<(int)RAM[cell]<<" : ";
 
 	for(int i = 8; i>0; i--)
 	{

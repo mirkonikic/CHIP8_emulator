@@ -80,7 +80,7 @@ void display_t::draw()
     for(int x = 0; x<32*64; x++)
     {
         if(screen[x] == 1){
-            printf("X: %d; Y: %d :) \n", x%64, x/64);
+            //printf("X: %d; Y: %d :) \n", x%64, x/64);
             SDL_RenderDrawPoint(renderer, (x%64)*10, (x/64)*10);
         }
     }

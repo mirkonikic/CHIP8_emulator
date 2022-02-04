@@ -74,9 +74,10 @@ int cpu_t::execute()
 					sp--;
                 	pc = stack[sp];
                 	pc += 2;
+					printf("0x00EE:\n\tsp: %X; \n", sp);
                 	break;
 				default:
-					//printf ("Unknown opcode [0x0000]: 0x%X\n", opcode);          
+					//printf ("\n\nUnknown code [0x0000]: 0x%X\n", opcode);          
 					break;
 			}
 			break;
@@ -198,7 +199,7 @@ Opcode	Type	C Pseudo	Explanation
 					printf("X: %x | %x -> Y: %X | %x; vF: %d \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4, vX[0xF]);
 					break;
 				default:
-					printf("%X unknown opcode\n", opcode);
+					printf("\n\n%X unknown opcode\n", opcode);
 					pc += 2;
 					break;
 			}
@@ -239,7 +240,7 @@ printf("0xDXYN - trebalo bi da je gotovo\n\t");
 			{
 				for(int j = 0; j<8; j++)
 				{
-					printf("celije: %d; vrednost: %d; memorija: %d\n", (((opcode&0x0F00)>>8) + j) + (((opcode&0x00F0)>>4)+i)*64, memory->getCell(I+(i*8)+j), I+i);
+					//printf("celije: %d; vrednost: %d; memorija: %d\n", (((opcode&0x0F00)>>8) + j) + (((opcode&0x00F0)>>4)+i)*64, memory->getCell(I+(i*8)+j), I+i);
 					if ((memory->getCell(I+i) & (0x80 >> j)) != 0)
 					{
 						if(display->screen[vX[((opcode&0x0F00)>>8)] + j + ( vX[((opcode&0x00F0)>>4)]+i)*64] == 1)
@@ -258,34 +259,30 @@ printf("0xDXYN - trebalo bi da je gotovo\n\t");
 			pc += 2;
 			break;
 		case 0xE000:
-//zavrsi input
 			//EX9E - if the key stored in vX is pressed skips next instr
 			//EXA1 - if the key stored in vX is not pressed skips next instr
 			switch(opcode & 0x00FF)
 			{
 				case 0x9E:
-				/*
-                    //Skips the next instruction if the key stored in VX is pressed.
-                    reg = get_nibble(opcode, 8, 0x0F00);
+				    //Skips the next instruction if the key stored in VX is pressed.
                     pc += 2;
-                    if (keypad[V[reg]] != 0)
+                    if (keypad[vX[(opcode&0x0F00)>>8]] != 0)
                     {
                         pc += 2;
                     }
-				*/
-					printf("0xEX9E - not finished\n");
+					printf("0xEX9E:\n\tkeypad: %X \n", keypad[vX[(opcode&0x0F00)>>8]]);
 					break;
 				case 0xA1:
-                /*
 				    //Skips the next instruction if the key stored in VX isn't pressed.
-                    reg = get_nibble(opcode, 8, 0x0F00);
                     pc += 2;
-                    if (keypad[V[reg]] == 0)
+                    if (keypad[vX[(opcode&0x0F00)>>8]] == 0)
                     {
                         pc += 2;
                     }
-				*/
-					printf("0xEXA1 - not finished\n");
+					printf("0xEXA1:\n\tkeypad: %X \n", keypad[vX[(opcode&0x0F00)>>8]]);
+					break;
+				default:
+					printf("\n\nUnknown %X code;\n", opcode);
 					break;
 			}
 			break;
@@ -313,33 +310,48 @@ Stores the binary-coded decimal representation of VX, with the most significant 
 					pc += 2;
 					printf("X: %x; d_time: %x \n", vX[(opcode & 0x0F00) >> 8], delay_timer);
 					break;
-//zavrsi
 				case 0x0A:
-					//vX[(opcode & 0x0F00) >> 8] = kbd->get_key();
-					pc += 2;
+					key_pressed = false;
+                    for (int i = 0; i < 16; i++)
+                    {
+                        if (keypad[i] != 0)
+                        {
+                            key_pressed = true;
+                            vX[(opcode&0x0F00)>>8] = (BYTE) i;
+                        }
+                    }
+                    if (key_pressed)
+                    {
+                        pc += 2; //ako nije pritisnut dugmic ne menja sa pc reg.
+                    }
 					printf("KEY PRESS EXPECTED \n");
 					break;
 				case 0x15:
 					delay_timer = vX[(opcode & 0x0F00) >> 8];
 					pc += 2;
+					printf("X: %x; d_time: %x \n", vX[(opcode & 0x0F00) >> 8], delay_timer);
 					break;
 				case 0x18:
 					sound_timer = vX[(opcode & 0x0F00) >> 8];
 					pc += 2;
+					printf("X: %x; s_time: %x \n", vX[(opcode & 0x0F00) >> 8], sound_timer);
 					break;
 				case 0x1E:
 					I += vX[(opcode & 0x0F00) >> 8];
 					pc += 2;
+					printf("X: %x; I: %x \n", vX[(opcode & 0x0F00) >> 8], I);
 					break;
 				case 0x29:
 					I = vX[(opcode & 0x0F00) >> 8] * 0x5;
 					pc += 2;
+					printf("X: %x; I: %x \n", vX[(opcode & 0x0F00) >> 8], I);
 					break;
 				case 0x33:
                     memory->setCell(I, vX[(opcode & 0x0F00) >> 8] / 100);
                     memory->setCell(I+1, ((vX[(opcode & 0x0F00) >> 8] / 10) % 10));
                     memory->setCell(I+2, ((vX[(opcode & 0x0F00) >> 8] % 100) % 10));
                     pc += 2;
+					printf("X: %x; I: %x \n", vX[(opcode & 0x0F00) >> 8], I);
 					break;
 				case 0x55:
 					for (int i = 0; i <= ((opcode & 0x0F00) >> 8); i++)
@@ -348,6 +360,7 @@ Stores the binary-coded decimal representation of VX, with the most significant 
                     }
                     I = I + ((opcode & 0x0F00) >> 8) + 1;
                     pc += 2;
+					printf("X: %x; I: %x \n", vX[(opcode & 0x0F00) >> 8], I);
 					break;
 				case 0x66:	
 					for (int i = 0; i <= ((opcode & 0x0F00) >> 8); i++)
@@ -356,11 +369,12 @@ Stores the binary-coded decimal representation of VX, with the most significant 
                     }
                     I = I + ((opcode & 0x0F00) >> 8) + 1;
                     pc += 2;
+					printf("X: %x; I: %x \n", vX[(opcode & 0x0F00) >> 8], I);
 					break;
 			}
 			break;
 		default:
-			printf ("Unknown opcode: 0x%X\n", opcode);
+			//printf ("\n\nUnknown opcode: 0x%X\n", opcode);
 			return 1;
 			break;
 	}		

@@ -11,6 +11,7 @@ class cpu_t
 	private:
 		memory_t *memory = nullptr;
 		display_t *display = nullptr;
+		//keypad_t *keypad = nullptr;
 		WORD pc, I, opcode, sp, stack[16];
 		BYTE vX[16], delay_timer, sound_timer;
 //vidi ili ovako da implementiras kbd ili kao odvojenu klasu
@@ -20,6 +21,8 @@ class cpu_t
 
 	public:
 		bool drawFlag = false;
+		bool key_pressed = false;
+		int keypad[16];
 		void init(memory_t *mem, display_t *displ);
 		int execute();
 		void memtest(int n);
