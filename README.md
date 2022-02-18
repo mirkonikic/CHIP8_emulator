@@ -2,6 +2,7 @@
 CHIP8 emulation project
 
 **Version 2**
+---
 ![img/gui_chip8_version2.gif](img/gui_chip8_version2.gif)
 ![img/terminal_chip8_version2.gif](img/terminal_chip8_version2.gif)
 
