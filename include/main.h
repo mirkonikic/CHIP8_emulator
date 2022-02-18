@@ -33,8 +33,8 @@ typedef uint16_t WORD;
 #define O_VERBOSE       0x01<<4	//0b00010000 //give more information
 #define O_INSPECT       0x01<<5	//0b00100000 //load and print info
 #define O_PRINT		0x01<<6	//0b01000000 //load and print hex values
-//not available yet 0b10000000
+//0b10000000 //speed of executing
 
-bool end = false;
+bool end = true;
 
 #endif

@@ -30,5 +30,13 @@ ALSO you can combine options such as:
 
 **ToDo**
 ---
-- [ ] Preuredi main.h
+- [x] Preuredi main.h
 - [ ] Zapocni execute_args -r -> while loop gde ucita fajl, kreira chip8 objekat i zapocne izvrsavanje
+- [ ] dodati prikaz registara, memorije, instrukcija koje se izvrsavaju itd.
+- [ ] dodati komande, kvadrat 1-V je keypad, i - stepped instructions on/off, n - next instruction, u $REG - update register/memory cell value, m - mute/unmute
+- [ ] audio dodati
+- [x] u main-u kreiraj SDL window i render, a onda u display ubaci samo umesto NULL, pa ces lakse korigovati nego da stoji samo u display
+- [ ] finish keypad: keypad, pause, exit, reset emulatora, step trough instructions, countinue execution, set register/cell to value, sound on/off
+- [ ] fix instructions
+- [ ] sredi argumente, -s za speed izvrsavanja u milisekundama, -r za pokretanje programa, -i za informacije o rom fajlu
+- [ ] popravi problem kod SpaceInvaders.ch8 i kod Cave.ch8

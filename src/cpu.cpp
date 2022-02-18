@@ -49,7 +49,7 @@ int cpu_t::execute()
 {
 	//fetch opcode
 	opcode = memory->getCell(pc)<<8 | memory->getCell(pc+1);
-	pc++; pc++;
+	//pc++; pc++;
 
 	printf("pc: %.2X 0x%X ", pc, opcode);
 
@@ -67,6 +67,7 @@ int cpu_t::execute()
 					display->clear();
 					drawFlag = true;
 					printf("0x00E0:\n\tDisplay Cleared :D");
+					pc += 2;
 					break;
  
 				case 0x00EE: // 0x00EE: Returns from subroutine          

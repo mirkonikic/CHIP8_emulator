@@ -5,6 +5,14 @@ std::filesystem::path f;	//rom path
 //I prenosim informacije, dal postoji fajl
 //Za to mi je trebalo 8 bitova, pa koristim unsigned char
 
+//keymap[16]	- za keypad
+//space			- za pause
+//esc			- za exit
+//f5			- za reset emulatora
+//i				- step trough/continue instructions
+//n				- next instruction
+//u $REG value	- set register/cell to value
+//m				- sound on/off
 uint8_t keymap[16] = {
         SDLK_x,
         SDLK_1,
@@ -41,18 +49,56 @@ int main(int argc, char **argv)
 //ILI PARSE_ARGS POPUNI GLOBALNU PROMENLJIVU FLAG_MASK
 	execute_args(parse_args(argc, argv));	//-h::help, -r::run, -l::list
 
+	if(end) return 0;
+	std::cout<<"Executing.."<<std::endl;
+
 	cpu_t cpu;
 	memory_t memory;
 	display_t display;
-		
+	
+	SDL_Window* wnd = nullptr;
+	SDL_Surface* scrn = nullptr;
+	SDL_Renderer* rndr = nullptr;
+	
+	//Initialize SDL
+	if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
+	{
+		printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
+	}
+	else
+    {
+        //Create window
+        //window = wnd;
+        wnd = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
+        if( wnd == NULL )
+        {
+            printf( "Window could not be created! SDL_Error: %s\n", SDL_GetError() );
+        }
+        else
+        {
+            //Get window renderer
+            rndr = SDL_CreateRenderer(wnd, -1, SDL_RENDERER_SOFTWARE);
+
+            //Get window surface
+            //screenSurface = SDL_GetWindowSurface( window );
+
+            //Fill the surface white
+            //SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0x00, 0xff, 0x00 ) );
+
+            //Update the surface
+            //SDL_UpdateWindowSurface( window );
+
+        }
+    }
+
 	//povezati cpu i memoriju
 	memory.init();
-	display.init();
+	display.init(wnd, rndr, scrn);
 	cpu.init(&memory, &display);
 	//keyboard.init();
 
 	//cpu.memtest(12);
-	display.test();
+	display.animation();
 	sleep(3);
 	display.clear();
 	sleep(1);
@@ -147,7 +193,7 @@ void execute_args(uint8_t bitmask)
 	if(bitmask & O_LIST) return rom_list();		//lists rom files
 	if(bitmask & O_INSPECT) rom_inspect();
 	if(bitmask & O_VERBOSE) std::cout<<"Verbose set"<<std::endl;
-	if(bitmask & O_RUN) std::cout<<"Executing.."<<std::endl;
+	if(bitmask & O_RUN && end) end=false;
 
 	binary_print(bitmask);
 }

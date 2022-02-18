@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include <SDL.h>
+#include <unistd.h>
 
 #define SCREEN_HEIGHT 320
 #define SCREEN_WIDTH 640
@@ -16,11 +17,12 @@ class display_t
 
 	public:
 		BYTE screen[32*64];
-		void init();
+		//BYTE screen[64][32];
+		void init(SDL_Window* wnd, SDL_Renderer* rndr, SDL_Surface* scrn);
 		void quit();
 		void draw();
 		void clear();
-		void test();
+		void animation();
 };
 
 #endif
