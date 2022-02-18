@@ -69,7 +69,7 @@ int main(int argc, char **argv)
     {
         //Create window
         //window = wnd;
-        wnd = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
+        wnd = SDL_CreateWindow( "Mirko's CHIP8 Emulator", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
         if( wnd == NULL )
         {
             printf( "Window could not be created! SDL_Error: %s\n", SDL_GetError() );
