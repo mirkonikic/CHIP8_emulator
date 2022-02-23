@@ -108,9 +108,9 @@ void display_t::draw()
     {
         if(screen[x] == 1){
             //printf("X: %d; Y: %d :) \n", x%64, x/64);
-            for(int q = 0; q<10; q++)
-                for(int p = 0; p<10; p++)
-                    SDL_RenderDrawPoint(renderer, ((x%64)*10)+q, ((x/64)*10)+p);
+            for(int q = 0; q<DISPLAY_MULTIPLIER; q++)
+                for(int p = 0; p<DISPLAY_MULTIPLIER; p++)
+                    SDL_RenderDrawPoint(renderer, ((x%64)*DISPLAY_MULTIPLIER)+q, ((x/64)*DISPLAY_MULTIPLIER)+p);
         }
     }
 
