@@ -5,8 +5,9 @@
 #include <SDL.h>
 #include <unistd.h>
 
-#define SCREEN_HEIGHT 320
-#define SCREEN_WIDTH 640
+#define DISPLAY_MULTIPLIER 10
+#define SCREEN_HEIGHT 32*DISPLAY_MULTIPLIER
+#define SCREEN_WIDTH 64*DISPLAY_MULTIPLIER
 
 class display_t
 {
