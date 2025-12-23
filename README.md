@@ -18,7 +18,7 @@ A simple **CHIP-8 emulator** project developed by **Mirko Nikic**.
 ## Demo
 
 ### GUI – Running Tron
-![GUI Tron](img/version2.png)
+![GUI Tron](img/version2_debugger_only.png)
 
 ### Terminal – Execution Details
 ![Terminal Execution](img/terminal_chip8_version2.gif)
