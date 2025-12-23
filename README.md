@@ -1,10 +1,10 @@
-# CHIP8 Emulator 🕹️
+# CHIP8 Debugger 🕹️
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT) 
 [![GitHub issues](https://img.shields.io/github/issues/mirkonikic/CHIP8_emulator)](https://github.com/mirkonikic/CHIP8_emulator/issues) 
 [![GitHub stars](https://img.shields.io/github/stars/mirkonikic/CHIP8_emulator)](https://github.com/mirkonikic/CHIP8_emulator/stargazers)
 
-A modern **CHIP-8 emulator** developed by **Mirko Nikic**, with GUI and terminal output.  
+A modern **CHIP-8 emulator/debugger** developed by **mirkhoff**, with GUI and terminal output.  
 Play classic CHIP-8 games like Tron, Space Invaders, and Cave, or inspect ROMs step-by-step.
 
 ---
@@ -19,23 +19,21 @@ Play classic CHIP-8 games like Tron, Space Invaders, and Cave, or inspect ROMs s
 
 ---
 
-## Features ✨
-
-- CHIP-8 program emulation with **SDL GUI**
-- Terminal output for **verbose execution**
-- Step-through instruction mode
-- Full keypad support simulation
-- Optional audio (planned)
-- Inspect ROM file size and details
-- Debugging capabilities for registers, memory, and instructions
+## Installation 🚀
+```bash
+git clone https://github.com/mirkonikic/CHIP8_emulator chip8
+cd chip8
+make
+```
 
 ---
 
-## Installation 🚀
-
-**Clone the repository:**
-
-```bash
-git clone https://github.com/mirkonikic/CHIP8_emulator.git
-cd CHIP8_emulator
-
+## Usage
+```
+Usage: ./chip8 [OPTION]
+        -h       : help
+        -l       : list
+        -r <FILE_NAME>   : run file_name program
+        -i <FILE_NAME>   : inspect file_name program
+        ALSO you are able to combine commands like:      -ir <FILE_NAME>...
+```
