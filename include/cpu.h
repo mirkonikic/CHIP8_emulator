@@ -8,7 +8,8 @@
 
 class cpu_t
 {
-	private:
+	//private:
+	public:
 		memory_t *memory = nullptr;
 		display_t *display = nullptr;
 		//keypad_t *keypad = nullptr;
@@ -19,7 +20,7 @@ class cpu_t
 		//64x32 pixels display
 		//gpu drawn by sprites, 8w 1-15h
 
-	public:
+	//public:
 		bool drawFlag = false;
 		bool key_pressed = false;
 		int keypad[16];

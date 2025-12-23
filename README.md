@@ -1,49 +1,34 @@
-# CHIP8_emulator
-CHIP8 emulation project
+# CHIP8 Emulator 🕹️
 
-**Version 2**
----
-## GUI - running Tron game
-![img/gui_chip8_version2.gif](img/gui_chip8_version2.gif)
-## Terminal - information about the execution
-![img/terminal_chip8_version2.gif](img/terminal_chip8_version2.gif)
+A simple **CHIP-8 emulator** project developed by **Mirko Nikic**.  
 
-**Version 1**
----
-![img/version1.jpg](img/version1.jpg)
-
-
-
-
-
-**Usage**
 ---
 
-```
-Usage: ./chip8 [OPTIONS]
+## Features
 
-  Developed by Mirko Nikic -> (Github: mirkonikic)
+- Emulates CHIP-8 programs with GUI and terminal output
+- Step-through instruction execution
+- Keypad input simulation
+- Optional verbose execution to inspect registers, memory, and instructions
+- Audio support (planned)
+- Works with classic CHIP-8 games like Tron, Space Invaders, and Cave
 
-Options:
-  -h         Help and usage
-  -l         List all available roms that can be played
-  -r <ROM>   Run specified rom file and play it
-  -i <ROM>   Inspect the ROM files size and other details
-  -v         Verbose execution, where one can have insight in registers, memory and instructions in other window
-  
-ALSO you can combine options such as:
-  -ri <ROM>   or   -virl <ROM>   or -lh   ...
-```
-
-**ToDo**
 ---
-- [x] Preuredi main.h
-- [ ] Zapocni execute_args -r -> while loop gde ucita fajl, kreira chip8 objekat i zapocne izvrsavanje
-- [ ] dodati prikaz registara, memorije, instrukcija koje se izvrsavaju itd.
-- [ ] dodati komande, kvadrat 1-V je keypad, i - stepped instructions on/off, n - next instruction, u $REG - update register/memory cell value, m - mute/unmute
-- [ ] audio dodati
-- [x] u main-u kreiraj SDL window i render, a onda u display ubaci samo umesto NULL, pa ces lakse korigovati nego da stoji samo u display
-- [ ] finish keypad: keypad, pause, exit, reset emulatora, step trough instructions, countinue execution, set register/cell to value, sound on/off
-- [ ] fix instructions
-- [ ] sredi argumente, -s za speed izvrsavanja u milisekundama, -r za pokretanje programa, -i za informacije o rom fajlu
-- [ ] popravi problem kod SpaceInvaders.ch8 i kod Cave.ch8
+
+## Demo
+
+### GUI – Running Tron
+![GUI Tron](img/version2.png)
+
+### Terminal – Execution Details
+![Terminal Execution](img/terminal_chip8_version2.gif)
+
+---
+
+## Usage
+
+```bash
+./chip8 [OPTIONS]
+
+Developed by Mirko Nikic -> (Github: [mirkoNikic](https://github.com/mirkonikic))
+
