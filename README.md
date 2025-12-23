@@ -11,10 +11,10 @@ Play classic CHIP-8 games like Tron, Space Invaders, and Cave, or inspect ROMs s
 
 ## Demo
 
-### GUI – Running Tron
+### GUI
 ![GUI Tron](img/version2_debugger_only.png)
 
-### Terminal – Execution Details
+### Terminal
 ![Terminal Execution](img/terminal_chip8_version2.gif)
 
 ---
