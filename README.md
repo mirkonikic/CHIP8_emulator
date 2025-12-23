@@ -1,6 +1,9 @@
 # CHIP8_emulator
 CHIP8 emulation project
 
+- [ ] add a debugging tools and window, pause, play and etc. buttons
+- [ ] ? embed lua engine ? -> not clear what can we script here
+
 **Version 2**
 ---
 ## GUI - running Tron game
