@@ -13,7 +13,7 @@ std::filesystem::path f;	//rom path
 //n				- next instruction
 //u $REG value	- set register/cell to value
 //m				- sound on/off
-uint8_t keymap[16] = {
+SDL_Keycode keymap[16] = {
         SDLK_x,
         SDLK_1,
         SDLK_2,

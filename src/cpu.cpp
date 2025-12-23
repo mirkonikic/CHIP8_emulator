@@ -100,14 +100,14 @@ int cpu_t::execute()
 		case 0x3000:
 			//3XNN -> skip the next instruction if VX == NN
 			//vX gde je x jedan od 16 registara
-			if(vX[(opcode & 0x0F00) >> 8] == opcode & 0x00FF)
+			if(vX[(opcode & 0x0F00) >> 8] == (opcode & 0x00FF))
 				pc+=2;
 			pc += 2;
 			printf("0x3XNN:\n\top: %X; X: %X|%d; vX[]: %.2X; pc: %X\n", opcode, (opcode & 0x0F00) >> 8, (opcode & 0x0F00) >> 8, vX[(opcode & 0x0F00) >> 8], pc);
 			break;
 		case 0x4000:
 			//4XNN -> skip the next instruction if the VX != NN
-			if(vX[(opcode & 0x0F00) >> 8] != opcode & 0x00FF)
+			if(vX[(opcode & 0x0F00) >> 8] != (opcode & 0x00FF))
 				pc+=2;
 			pc += 2;
 			printf("0x4XNN:\n\top: %X; X: %X|%d; vX[]: %.2X; pc: %X\n", opcode, (opcode & 0x0F00) >> 8, (opcode & 0x0F00) >> 8, vX[(opcode & 0x0F00) >> 8], pc);
@@ -169,18 +169,37 @@ Opcode	Type	C Pseudo	Explanation
 					pc += 2;
 					printf("X: %x | %x -> Y: %X | %x \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4);
 					break;
+				//case 0x4:
+				//	vX[(opcode&0x0F00)>>8] += vX[(opcode&0x00F0)>>4];
+				//	vX[0xF] = (BYTE)(vX[(opcode&0x0F00)>>8]+vX[(opcode&0x00F0)>>4])>0xFF;
+				//	pc += 2;
+				//	printf("X: %x | %x -> Y: %X | %x; carry: %d \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4, (BYTE)(vX[(opcode&0x0F00)>>8]+vX[(opcode&0x00F0)>>4])>0xFF);
+				//	break;
 				case 0x4:
-					vX[(opcode&0x0F00)>>8] += vX[(opcode&0x00F0)>>4];
-					vX[0xF] = (BYTE)(vX[(opcode&0x0F00)>>8]+vX[(opcode&0x00F0)>>4])>0xFF;
-					pc += 2;
-					printf("X: %x | %x -> Y: %X | %x; carry: %d \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4, (BYTE)(vX[(opcode&0x0F00)>>8]+vX[(opcode&0x00F0)>>4])>0xFF);
-					break;
+				{
+				  uint16_t sum = vX[(opcode&0x0F00)>>8] + vX[(opcode&0x00F0)>>4];
+				  vX[0xF] = (sum > 0xFF) ? 1 : 0;
+				  vX[(opcode&0x0F00)>>8] = sum & 0xFF;
+				  pc += 2;
+				  printf("X: %x | %x -> Y: %X | %x; carry: %d \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4, vX[0xF]);
+				  break;
+				}
+				//case 0x5:
+				//	vX[(opcode&0x0F00)>>8] -= vX[(opcode&0x00F0)>>4];
+				//	pc += 2;
+				//	vX[0xF] = (BYTE)!(vX[(opcode&0x0F00)>>8]<vX[(opcode&0x00F0)>>4]);
+				//	printf("X: %x | %x -> Y: %X | %x; carry: %d \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4, (BYTE)!(vX[(opcode&0x0F00)>>8]<vX[(opcode&0x00F0)>>4]));
+				//	break;
 				case 0x5:
-					vX[(opcode&0x0F00)>>8] -= vX[(opcode&0x00F0)>>4];
-					pc += 2;
-					vX[0xF] = (BYTE)!(vX[(opcode&0x0F00)>>8]<vX[(opcode&0x00F0)>>4]);
-					printf("X: %x | %x -> Y: %X | %x; carry: %d \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4, (BYTE)!(vX[(opcode&0x0F00)>>8]<vX[(opcode&0x00F0)>>4]));
-					break;
+				{
+				  uint8_t x = (opcode&0x0F00)>>8;
+				  uint8_t y = (opcode&0x00F0)>>4;
+				  vX[0xF] = (vX[x] >= vX[y]) ? 1 : 0;  // Set BEFORE subtraction
+				  vX[x] -= vX[y];
+				  pc += 2;
+				  printf("X: %x | %x -> Y: %X | %x; borrow: %d \n", vX[x], x, vX[y], y, vX[0xF]);
+				  break;
+				}
 				case 0x6:
 					vX[0xF] = vX[(opcode&0x0F00)>>8] & 0x1;
 					vX[(opcode&0x0F00)>>8] >>= 1;
@@ -193,12 +212,16 @@ Opcode	Type	C Pseudo	Explanation
 					vX[0xF] = (BYTE)!(vX[(opcode&0x0F00)>>8]>vX[(opcode&0x00F0)>>4]);
 					printf("X: %x | %x -> Y: %X | %x; carry: %d \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4, (BYTE)!(vX[(opcode&0x0F00)>>8]<vX[(opcode&0x00F0)>>4]));
 					break;
+				//case 0xE:
+				//	vX[0xF] = vX[(opcode&0x0F00)>>8] & 0b10000000;
+				//	vX[(opcode&0x0F00)>>8] <<= 1;
+				//	pc += 2;
+				//	printf("X: %x | %x -> Y: %X | %x; vF: %d \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4, vX[0xF]);
+				//	break;
 				case 0xE:
-					vX[0xF] = vX[(opcode&0x0F00)>>8] & 0b10000000;
-					vX[(opcode&0x0F00)>>8] <<= 1;
-					pc += 2;
-					printf("X: %x | %x -> Y: %X | %x; vF: %d \n", vX[(opcode&0x0F00)>>8], (opcode&0x0F00)>>8, vX[(opcode&0x00F0)>>4], (opcode&0x00F0)>>4, vX[0xF]);
-					break;
+    			vX[0xF] = (vX[(opcode&0x0F00)>>8] & 0x80) >> 7;  // Extract bit and shift to get 0 or 1
+    			vX[(opcode&0x0F00)>>8] <<= 1;
+    			pc += 2;
 				default:
 					printf("\n\n%X unknown opcode\n", opcode);
 					pc += 2;
@@ -231,34 +254,70 @@ Opcode	Type	C Pseudo	Explanation
 			printf("0xCXNN:\n\top: %X; X: %X|%d; vX[]: %.2X; pc: %X\n", opcode, (opcode & 0x0F00) >> 8, (opcode & 0x0F00) >> 8, vX[(opcode & 0x0F00) >> 8], pc);
 			break;
 		case 0xD000:		
-printf("0xDXYN - trebalo bi da je gotovo\n\t");
-			printf("x: %d; y: %d; N: %d; I: %X\n", vX[((opcode&0x0F00)>>8)], vX[((opcode&0x00F0)>>8)], opcode&0x000F, I);
-			//0xDXYN
-			//	Draw sprite at position X,Y
-			//	N rows width of 8 bits
-			//	Sprite is at location on which I points to
-			for(int i = 0; i<(opcode&0x000F); i++)
-			{
-				for(int j = 0; j<8; j++)
-				{
-					//printf("celije: %d; vrednost: %d; memorija: %d\n", (((opcode&0x0F00)>>8) + j) + (((opcode&0x00F0)>>4)+i)*64, memory->getCell(I+(i*8)+j), I+i);
-					if ((memory->getCell(I+i) & (0x80 >> j)) != 0)
-					{
-						if(display->screen[vX[((opcode&0x0F00)>>8)] + j + ( vX[((opcode&0x00F0)>>4)]+i)*64] == 1)
-							vX[0xF] = 1;
-						display->screen[( vX[((opcode&0x0F00)>>8)] + j) + ( vX[((opcode&0x00F0)>>4)]+i)*64] ^= 1;
-					}
-				}
-				//y = 1 -> jedan red od 64 x je predjen
-				//n / 32 = red u kom se trenutno nalazi
-				//n % 64 = celiju u ovom redu
-				//da bi dobili nazad element
-				//x + ((y+i) * 64)
-				//ali na tome crtamo po 8 pixela width
-			}
-			drawFlag = true;
-			pc += 2;
-			break;
+		{
+		  printf("0xDXYN - Drawing sprite\n");
+		  
+		  int x = vX[(opcode & 0x0F00) >> 8];
+		  int y = vX[(opcode & 0x00F0) >> 4];
+		  int height = opcode & 0x000F;
+		  
+		  printf("x: %d; y: %d; height: %d; I: %X\n", x, y, height, I);
+		  
+		  vX[0xF] = 0;
+		  
+		  for(int row = 0; row < height; row++)
+		  {
+		      uint8_t spriteData = memory->getCell(I + row);
+		      
+		      for(int col = 0; col < 8; col++)
+		      {
+		          if ((spriteData & (0x80 >> col)) != 0)
+		          {
+		              int xPos = (x + col) % 64;
+		              int yPos = (y + row) % 32;
+		              int pixelIndex = xPos + yPos * 64;
+		              
+		              if(display->screen[pixelIndex] == 1)
+		                  vX[0xF] = 1;
+		                  
+		              display->screen[pixelIndex] ^= 1;
+		          }
+		      }
+		  }
+		  
+		  drawFlag = true;
+		  pc += 2;
+		  break;
+		}
+//		case 0xD000:		
+//			printf("0xDXYN - trebalo bi da je gotovo\n\t");
+//			printf("x: %d; y: %d; N: %d; I: %X\n", vX[((opcode&0x0F00)>>8)], vX[((opcode&0x00F0)>>8)], opcode&0x000F, I);
+//			//0xDXYN
+//			//	Draw sprite at position X,Y
+//			//	N rows width of 8 bits
+//			//	Sprite is at location on which I points to
+//			for(int i = 0; i<(opcode&0x000F); i++)
+//			{
+//				for(int j = 0; j<8; j++)
+//				{
+//					//printf("celije: %d; vrednost: %d; memorija: %d\n", (((opcode&0x0F00)>>8) + j) + (((opcode&0x00F0)>>4)+i)*64, memory->getCell(I+(i*8)+j), I+i);
+//					if ((memory->getCell(I+i) & (0x80 >> j)) != 0)
+//					{
+//						if(display->screen[vX[((opcode&0x0F00)>>8)] + j + ( vX[((opcode&0x00F0)>>4)]+i)*64] == 1)
+//							vX[0xF] = 1;
+//						display->screen[( vX[((opcode&0x0F00)>>8)] + j) + ( vX[((opcode&0x00F0)>>4)]+i)*64] ^= 1;
+//					}
+//				}
+//				//y = 1 -> jedan red od 64 x je predjen
+//				//n / 32 = red u kom se trenutno nalazi
+//				//n % 64 = celiju u ovom redu
+//				//da bi dobili nazad element
+//				//x + ((y+i) * 64)
+//				//ali na tome crtamo po 8 pixela width
+//			}
+//			drawFlag = true;
+//			pc += 2;
+//			break;
 		case 0xE000:
 			//EX9E - if the key stored in vX is pressed skips next instr
 			//EXA1 - if the key stored in vX is not pressed skips next instr
@@ -363,7 +422,8 @@ Stores the binary-coded decimal representation of VX, with the most significant 
                     pc += 2;
 					printf("X: %x; I: %x \n", vX[(opcode & 0x0F00) >> 8], I);
 					break;
-				case 0x66:	
+				case 0x65:	
+				case 0x66:
 					for (int i = 0; i <= ((opcode & 0x0F00) >> 8); i++)
                     {
                         vX[i] = memory->getCell(I + i);

@@ -55,7 +55,8 @@ void memory_t::printCell(int cell)
 
 void memory_t::load(std::string f, int n)
 {
-	std::ifstream rf(f, std::ios::out | std::ios::binary);
+	//std::ifstream rf(f, std::ios::out | std::ios::binary);
+	std::ifstream rf(f, std::ios::binary);
 	if(!rf) {
 		
 		return;
